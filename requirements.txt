@@ -1,0 +1,4 @@
+flask
+flask_sqlalchemy
+psutil
+argon2-cffi
