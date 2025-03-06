@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ brand }} Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Side Navigation -->
+  <div class="d-flex">
+    <nav class="sidebar bg-white p-3 shadow-sm">
+      <div class="sidebar-header mb-4 text-center">
+        <h4 class="fw-bold">{{ brand }}</h4>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+          <a class="nav-link active" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-home me-2"></i> Dashboard
+          </a>
+        </li>
+        {% if session.get('logged_in') %}
+        <li class="nav-item mb-2">
+          <a class="nav-link" href="{{ url_for('admin') }}">
+            <i class="fas fa-toolbox me-2"></i> Admin Panel
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+      <div class="mt-auto text-center">
+        <small class="text-muted">© 2025 {{ brand }}</small>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-content flex-grow-1">
+      <!-- Top Bar -->
+      <nav class="navbar navbar-light bg-light shadow-sm px-3 py-2">
+        <div class="d-flex align-items-center">
+          <h5 class="mb-0 me-3" id="day-date">...</h5>
+          <span class="text-muted" id="time-string">...</span>
+        </div>
+        <div>
+          {% if session.get('logged_in') %}
+            <a class="btn btn-outline-danger btn-sm" href="{{ url_for('logout') }}">
+              Logout
+            </a>
+          {% else %}
+            <a class="btn btn-outline-primary btn-sm" href="{{ url_for('login') }}">
+              Login
+            </a>
+          {% endif %}
+        </div>
+      </nav>
+
+      <!-- Main Dashboard Content -->
+      <div class="container-fluid p-4">
+        <h2 class="fw-bold mb-4">Dashboard</h2>
+
+        <!-- Analytics Cards -->
+        <div class="row g-3 mb-4">
+          <!-- CPU Usage -->
+          <div class="col-sm-6 col-md-4 col-lg-2">
+            <div class="card analytics-card shadow-sm text-center">
+              <div class="card-body">
+                <i class="fas fa-microchip fa-2x text-primary mb-2"></i>
+                <h6 class="card-title fw-bold">CPU Usage</h6>
+                <p class="card-text text-secondary mb-0" id="cpu-usage">--%</p>
+              </div>
+            </div>
+          </div>
+          <!-- Memory Usage -->
+          <div class="col-sm-6 col-md-4 col-lg-2">
+            <div class="card analytics-card shadow-sm text-center">
+              <div class="card-body">
+                <i class="fas fa-memory fa-2x text-success mb-2"></i>
+                <h6 class="card-title fw-bold">Memory</h6>
+                <p class="card-text text-secondary mb-0" id="mem-usage">--%</p>
+              </div>
+            </div>
+          </div>
+          <!-- Disk Usage -->
+          <div class="col-sm-6 col-md-4 col-lg-2">
+            <div class="card analytics-card shadow-sm text-center">
+              <div class="card-body">
+                <i class="fas fa-hdd fa-2x text-warning mb-2"></i>
+                <h6 class="card-title fw-bold">Disk</h6>
+                <p class="card-text text-secondary mb-0" id="disk-usage">--%</p>
+              </div>
+            </div>
+          </div>
+          <!-- CPU Temp -->
+          <div class="col-sm-6 col-md-4 col-lg-2">
+            <div class="card analytics-card shadow-sm text-center">
+              <div class="card-body">
+                <i class="fas fa-thermometer-half fa-2x text-danger mb-2"></i>
+                <h6 class="card-title fw-bold">CPU Temp</h6>
+                <p class="card-text text-secondary mb-0" id="cpu-temp">N/A</p>
+              </div>
+            </div>
+          </div>
+          <!-- Home Dirs -->
+          <div class="col-sm-6 col-md-4 col-lg-2">
+            <div class="card analytics-card shadow-sm text-center">
+              <div class="card-body">
+                <i class="fas fa-user-friends fa-2x text-info mb-2"></i>
+                <h6 class="card-title fw-bold">Home Dirs</h6>
+                <p class="card-text text-secondary mb-0" id="home-dirs">--</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apps Section -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-white">
+            <h5 class="mb-0 fw-bold">Your Applications</h5>
+          </div>
+          <div class="card-body">
+            <!-- Search and Sort -->
+            <div class="row justify-content-center mb-4">
+              <div class="col-12 col-md-6">
+                <input type="text" id="search-input" class="form-control" placeholder="Search applications..." onkeyup="filterApps()">
+              </div>
+              <div class="col-12 col-md-3 mt-3 mt-md-0 d-flex justify-content-md-end">
+                <select id="sort-select" class="form-select" onchange="sortApps()">
+                  <option value="">Sort By...</option>
+                  <option value="asc">Name (A-Z)</option>
+                  <option value="desc">Name (Z-A)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- App Cards -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3" id="app-list">
+              {% if apps %}
+                {% for app in apps %}
+                <div class="col app-card" data-name="{{ app.name }}">
+                  <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body d-flex flex-column justify-content-center text-center">
+                      <i class="fas fa-cubes fa-2x text-primary mb-2"></i>
+                      <h5 class="card-title fw-bold">{{ app.name }}</h5>
+                      <p class="text-muted small">Click below to launch the app.</p>
+                      <a href="{{ app.url }}" target="_blank" class="btn btn-primary w-100 mt-auto">
+                        Open <i class="fas fa-arrow-right ms-2"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="col-12">
+                  <div class="alert alert-warning text-center">
+                    No applications added yet.
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Client-side Search, Sort, Stats Refresh, and Local Time -->
+  <script>
+    // Filter applications by name
+    function filterApps() {
+      let input = document.getElementById("search-input");
+      let filter = input.value.toLowerCase();
+      let cards = document.getElementById("app-list").getElementsByClassName("app-card");
+
+      for (let i = 0; i < cards.length; i++) {
+        let appName = cards[i].getAttribute("data-name").toLowerCase();
+        cards[i].style.display = appName.includes(filter) ? "" : "none";
+      }
+    }
+
+    // Sort applications
+    function sortApps() {
+      let sortOption = document.getElementById("sort-select").value;
+      let appList = document.getElementById("app-list");
+      let cards = Array.from(appList.getElementsByClassName("app-card"));
+
+      if (sortOption === "asc") {
+        cards.sort((a, b) => {
+          let nameA = a.getAttribute("data-name").toLowerCase();
+          let nameB = b.getAttribute("data-name").toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+      } else if (sortOption === "desc") {
+        cards.sort((a, b) => {
+          let nameA = a.getAttribute("data-name").toLowerCase();
+          let nameB = b.getAttribute("data-name").toLowerCase();
+          return nameB.localeCompare(nameA);
+        });
+      }
+      cards.forEach((card) => appList.appendChild(card));
+    }
+
+    // Fetch system stats from server every 5 seconds
+    function fetchStats() {
+      fetch("/stats")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("cpu-usage").textContent = data.cpu_usage + "%";
+          document.getElementById("mem-usage").textContent = data.mem_usage + "%";
+          document.getElementById("disk-usage").textContent = data.disk_usage + "%";
+          document.getElementById("cpu-temp").textContent = data.cpu_temp ? data.cpu_temp + "°C" : "N/A";
+          document.getElementById("home-dirs").textContent = data.home_count;
+        })
+        .catch(err => console.error("Error fetching stats:", err));
+    }
+
+    // Update local time every second
+    function updateLocalTime() {
+      const now = new Date();
+      const dayName = now.toLocaleString('en-US', { weekday: 'long' });
+      const dateString = now.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const timeString = now.toLocaleTimeString([], { hour12: false });
+
+      document.getElementById("day-date").textContent = dayName + ", " + dateString;
+      document.getElementById("time-string").innerHTML = '<i class="far fa-clock me-1"></i>' + timeString;
+    }
+
+    // Start intervals
+    fetchStats();
+    setInterval(fetchStats, 5000);  // system stats every 5s
+    updateLocalTime();
+    setInterval(updateLocalTime, 1000); // local time every 1s
+  </script>
+</body>
+</html>
+
