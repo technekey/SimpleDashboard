@@ -11,7 +11,7 @@ This is a super simple dashboard for selfhosted applications. This is nothing fa
 pip3 -r requirements.txt
 ```
 
-2. Setup admin password and Dashboard title
+# Setup(Run helper script, provide config values)
 
 ```
 python3 set_password.py
@@ -42,14 +42,15 @@ Debug Insights feature is ENABLED. System analytics will be visible in Admin Pan
 
 ```
 
-4. Update the FERNET_SECRET env variable in your env variable
+# Execution: 
+1. Update the FERNET_SECRET env variable in your env variable
 
 ```
 echo 'export FERNET_SECRET="i5ePy_3ZlLNjbOr...........JbVU910vLQzj8lXt3oU="' > ~/.bashrc
 . ~/.bashrc
 ```
 
-3. Start the app
+2. Start the app
 
 ```
 python app.py
