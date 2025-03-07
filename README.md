@@ -1,7 +1,7 @@
 # SimpleDashboard
-This is a super simple dashboard for selfhosted applications. This is nothing fancy, admin can add/remove applications to the dashboard, whereas other users can use them. This also show basic system stats, like CPU Usage, Memory, Number of users, CPU Temp etc. 
+This is a super simple dashboard for selfhosted applications. This is nothing fancy, admin can add/remove applications to the dashboard, whereas other users can use them. This also show basic system stats, like CPU Usage, Memory, Number of users, CPU Temp etc.  
 
-
+Note: I have only tested this on `Ubuntu 24.04` on LAN.  If you have any suggestions, please reach out. Thanks. 
 
 # Installation
 
