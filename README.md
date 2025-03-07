@@ -13,6 +13,8 @@ pip3 -r requirements.txt
 
 # Setup(Run helper script, provide config values)
 
+Run the helper script, that would setup the `config.json` file for initial use.  Once `config.json` file is created, you may edit it directly at will. 
+
 ```
 python3 set_password.py
 A new Fernet key has been generated:
