@@ -1,7 +1,10 @@
-/* Base Styles */
+/* 
+  Base (Light) Styles 
+  ------------------------------------------------------------
+*/
 body {
   font-family: 'Inter', sans-serif;
-  background: #f9fafb;
+  background: #f9fafb; /* Light background */
   color: #333;
   margin: 0;
   padding: 0;
@@ -12,6 +15,7 @@ body {
   width: 250px;
   min-height: 100vh;
   border-right: 1px solid #e9ecef;
+  background: #fff; /* White in light mode */
 }
 .sidebar-header h4 {
   color: #2c3e50;
@@ -28,42 +32,50 @@ body {
   font-weight: 600;
 }
 
+.icon-choice i {
+  font-size: 1.0rem !important; /* or 2rem, or 24px, etc. */
+}
+
 /* Main Content */
 .main-content {
   width: 100%;
   min-height: 100vh;
-  background: #f9fafb;
+  background: #f9fafb; /* Light background for content area */
 }
 
 /* Top Bar */
 .navbar-light.bg-light {
   border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
 }
-
-/* Analytics Cards */
-.analytics-card {
-  border: 1px solid #eee;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-.analytics-card:hover {
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  transform: translateY(-2px);
-}
-
-/* Buttons & Links */
-.btn-login {
-  color: #2c3e50 !important;
-  font-weight: 600;
+.navbar .text-muted {
+  color: #6c757d !important;
 }
 
 /* Cards */
 .card {
   border-radius: 12px;
+  transition: all 0.2s ease;
+  background: #fff; /* White in light mode */
+  border: 1px solid #eee;
 }
 .card:hover {
-  transform: none; /* keep minimal hover effect for app cards */
+  transform: none;
   box-shadow: none;
+}
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+/* Analytics Cards */
+.analytics-card {
+  /* inherits .card's background/border */
+}
+.analytics-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
 }
 
 /* Admin Table */
@@ -78,10 +90,42 @@ body {
 .form-control {
   border-radius: 8px;
 }
+.form-select {
+  border-radius: 8px;
+}
 
 /* Alerts */
 .alert {
   border-radius: 8px;
+}
+
+/* Buttons & Links */
+.btn-login {
+  color: #2c3e50 !important;
+  font-weight: 600;
+}
+.btn-primary {
+  background-color: #0d6efd;
+  border: none;
+}
+.btn-primary:hover {
+  background-color: #0b5ed7;
+}
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+.btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: #fff;
 }
 
 /* Footer (if used) */
@@ -106,5 +150,133 @@ footer.footer {
   .main-content {
     margin-left: 0 !important;
   }
+}
+
+/* 
+  Dark Mode Overrides 
+  ------------------------------------------------------------
+  We assume you toggle .dark-mode on <body id="main-body">
+*/
+.dark-mode {
+  background: #181a1b !important; /* entire page background */
+  color: #d1d1d1 !important;
+}
+
+/* Sidebar in dark mode */
+.dark-mode .sidebar {
+  background: #202225 !important;
+  border-right: 1px solid #2f3136;
+}
+.dark-mode .sidebar-header h4 {
+  color: #fff !important;
+}
+.dark-mode .nav-link {
+  color: #c7c7c7 !important;
+}
+.dark-mode .nav-link.active,
+.dark-mode .nav-link:hover {
+  background-color: #2f3136 !important;
+  color: #fff !important;
+}
+
+/* Main content in dark mode */
+.dark-mode .main-content {
+  background: #181a1b !important;
+}
+
+/* Top bar in dark mode */
+.dark-mode .navbar {
+  background-color: #202225 !important;
+  border-bottom: 1px solid #2f3136 !important;
+}
+.dark-mode .navbar .text-muted {
+  color: #b0b0b0 !important;
+}
+
+/* Cards in dark mode */
+.dark-mode .card {
+  background: #202225 !important;
+  border: 1px solid #2f3136 !important;
+}
+.dark-mode .card .card-title,
+.dark-mode .card .card-text {
+  color: #d1d1d1 !important;
+}
+/* Card header override */
+.dark-mode .card-header {
+  background: #202225 !important;
+  border-bottom: 1px solid #2f3136 !important;
+  color: #d1d1d1 !important;
+}
+.dark-mode .analytics-card:hover {
+  box-shadow: 0 6px 18px rgba(255,255,255,0.03);
+}
+
+/* Buttons in dark mode */
+.dark-mode .btn {
+  border-color: #555 !important;
+  color: #d1d1d1 !important;
+}
+.dark-mode .btn-primary {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #fff !important;
+}
+.dark-mode .btn-primary:hover {
+  background-color: #2c6cd2 !important;
+}
+.dark-mode .btn-outline-danger {
+  color: #f88 !important;
+  border-color: #f88 !important;
+}
+.dark-mode .btn-outline-danger:hover {
+  background-color: #f88 !important;
+  color: #fff !important;
+}
+.dark-mode .btn-outline-primary {
+  color: #7fc8ff !important;
+  border-color: #7fc8ff !important;
+}
+.dark-mode .btn-outline-primary:hover {
+  background-color: #7fc8ff !important;
+  color: #202225 !important;
+}
+
+/* Table, forms, etc. in dark mode */
+.dark-mode .table-striped > tbody > tr:nth-of-type(2n+1) > * {
+  background-color: #26282b !important;
+}
+
+/* 
+   IMPORTANT: 
+   Make both .form-control and .form-select dark
+   with readable placeholder text
+*/
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: #2a2c2f !important;
+  color: #d1d1d1 !important;
+  border: 1px solid #444 !important;
+}
+.dark-mode .form-control::placeholder,
+.dark-mode .form-select::placeholder {
+  color: #888 !important;
+}
+/* Focus styling for better visual feedback */
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.25);
+  border-color: #3b82f6;
+}
+
+.dark-mode .alert {
+  background-color: #2a2c2f;
+  border-color: #444;
+  color: #d1d1d1;
+}
+.dark-mode footer.footer {
+  background: #202225 !important;
+  border-top: 1px solid #2f3136 !important;
 }
 

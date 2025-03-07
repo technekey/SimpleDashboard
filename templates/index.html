@@ -15,7 +15,7 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body id="main-body">
   <!-- Side Navigation -->
   <div class="d-flex">
     <nav class="sidebar bg-white p-3 shadow-sm">
@@ -46,10 +46,24 @@
       <!-- Top Bar -->
       <nav class="navbar navbar-light bg-light shadow-sm px-3 py-2">
         <div class="d-flex align-items-center">
+          <!-- Date + Time -->
           <h5 class="mb-0 me-3" id="day-date">...</h5>
-          <span class="text-muted" id="time-string">...</span>
+          <span class="text-muted me-4" id="time-string">...</span>
+
+          {% if weather_enabled %}
+          <!-- Inline Weather Snippet -->
+          <div class="d-flex align-items-center" style="gap: 0.5rem;">
+            <i class="fas fa-cloud-sun-rain text-info" id="weather-icon"></i>
+            <strong id="weather-temp" class="me-2">--°C</strong>
+            <small class="text-muted" id="weather-desc">Loading...</small>
+          </div>
+          {% endif %}
         </div>
-        <div>
+
+        <div class="d-flex align-items-center" style="gap: 0.5rem;">
+          <!-- Dark Mode Toggle Button -->
+          <button class="btn btn-secondary btn-sm" id="darkModeToggle">Dark Mode</button>
+
           {% if session.get('logged_in') %}
             <a class="btn btn-outline-danger btn-sm" href="{{ url_for('logout') }}">
               Logout
@@ -118,6 +132,16 @@
               </div>
             </div>
           </div>
+          <!-- Uptime -->
+          <div class="col-sm-6 col-md-4 col-lg-2">
+            <div class="card analytics-card shadow-sm text-center">
+              <div class="card-body">
+                <i class="fas fa-clock fa-2x text-secondary mb-2"></i>
+                <h6 class="card-title fw-bold">Uptime</h6>
+                <p class="card-text text-secondary mb-0" id="uptime">--:--:--</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Apps Section -->
@@ -147,7 +171,17 @@
                 <div class="col app-card" data-name="{{ app.name }}">
                   <div class="card h-100 shadow-sm border-0">
                     <div class="card-body d-flex flex-column justify-content-center text-center">
-                      <i class="fas fa-cubes fa-2x text-primary mb-2"></i>
+                      <!-- If app.icon starts with 'upload:', show <img> with center alignment -->
+                      {% if app.icon.startswith('upload:') %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ app.icon[7:]) }}"
+                             alt="Custom Icon"
+                             style="width:40px; height:40px;"
+                             class="mb-2 mx-auto d-block">
+                      {% else %}
+                        <!-- Otherwise, Font Awesome icon -->
+                        <i class="{{ app.icon }} fa-2x text-primary mb-2"></i>
+                      {% endif %}
+
                       <h5 class="card-title fw-bold">{{ app.name }}</h5>
                       <p class="text-muted small">Click below to launch the app.</p>
                       <a href="{{ app.url }}" target="_blank" class="btn btn-primary w-100 mt-auto">
@@ -175,9 +209,21 @@
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Client-side Search, Sort, Stats Refresh, and Local Time -->
+  <!-- Client-side Scripts -->
   <script>
-    // Filter applications by name
+    // Dark Mode Toggle
+    const body = document.getElementById("main-body");
+    const toggleBtn = document.getElementById("darkModeToggle");
+
+    toggleBtn.addEventListener("click", () => {
+      body.classList.toggle("dark-mode");
+      if (body.classList.contains("dark-mode")) {
+        toggleBtn.textContent = "Light Mode";
+      } else {
+        toggleBtn.textContent = "Dark Mode";
+      }
+    });
+
     function filterApps() {
       let input = document.getElementById("search-input");
       let filter = input.value.toLowerCase();
@@ -189,7 +235,6 @@
       }
     }
 
-    // Sort applications
     function sortApps() {
       let sortOption = document.getElementById("sort-select").value;
       let appList = document.getElementById("app-list");
@@ -211,7 +256,6 @@
       cards.forEach((card) => appList.appendChild(card));
     }
 
-    // Fetch system stats from server every 5 seconds
     function fetchStats() {
       fetch("/stats")
         .then(response => response.json())
@@ -221,11 +265,31 @@
           document.getElementById("disk-usage").textContent = data.disk_usage + "%";
           document.getElementById("cpu-temp").textContent = data.cpu_temp ? data.cpu_temp + "°C" : "N/A";
           document.getElementById("home-dirs").textContent = data.home_count;
+          document.getElementById("uptime").textContent = data.uptime;
         })
         .catch(err => console.error("Error fetching stats:", err));
     }
 
-    // Update local time every second
+    {% if weather_enabled %}
+    function fetchWeather() {
+      fetch("/weather")
+        .then(resp => resp.json())
+        .then(data => {
+          if(data.error) {
+            document.getElementById("weather-temp").textContent = "N/A";
+            document.getElementById("weather-desc").textContent = data.error;
+          } else {
+            document.getElementById("weather-temp").textContent = data.temperature + "°C";
+            document.getElementById("weather-desc").textContent = data.description;
+          }
+        })
+        .catch(err => {
+          document.getElementById("weather-temp").textContent = "N/A";
+          document.getElementById("weather-desc").textContent = "Error fetching weather";
+        });
+    }
+    {% endif %}
+
     function updateLocalTime() {
       const now = new Date();
       const dayName = now.toLocaleString('en-US', { weekday: 'long' });
@@ -238,9 +302,15 @@
 
     // Start intervals
     fetchStats();
-    setInterval(fetchStats, 5000);  // system stats every 5s
+    setInterval(fetchStats, 5000);
+
+    {% if weather_enabled %}
+      fetchWeather();
+      setInterval(fetchWeather, 600000); // 10 min
+    {% endif %}
+
     updateLocalTime();
-    setInterval(updateLocalTime, 1000); // local time every 1s
+    setInterval(updateLocalTime, 1000);
   </script>
 </body>
 </html>

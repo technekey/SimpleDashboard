@@ -32,6 +32,45 @@
 
     <h1 class="mb-4 text-center text-primary fw-bold">Admin Panel</h1>
 
+    <!-- Inline CSS for Icon Scroller & Icon Choices -->
+    <style>
+      .icon-scroller {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 8px 0;
+      }
+      .icon-scroller::-webkit-scrollbar {
+        height: 6px; /* smaller horizontal scrollbar */
+      }
+      .icon-scroller::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+      }
+
+      .icon-choice {
+        cursor: pointer;
+        border: 1px solid transparent;
+        display: inline-block; /* so they line up horizontally */
+        text-align: center;
+        width: 70px; /* adjust as needed */
+        margin-right: 15px;
+        border-radius: 8px;
+        transition: background-color 0.2s, border-color 0.2s;
+        padding: 10px;
+      }
+      .icon-choice:hover {
+        border-color: #aaa;
+        background-color: #f8f8f8;
+      }
+      .icon-choice.selected {
+        border-color: #007bff;
+        background-color: #e7f1ff;
+      }
+      .icon-choice i {
+        font-size: 1.8rem; /* smaller icons than fa-3x */
+      }
+    </style>
+
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -47,7 +86,8 @@
         <i class="fas fa-plus me-2"></i> Add New Application
       </div>
       <div class="card-body">
-        <form method="POST" action="{{ url_for('admin') }}">
+        <!-- Enctype for file upload if you have custom icon_file logic in app.py -->
+        <form method="POST" action="{{ url_for('admin') }}" enctype="multipart/form-data">
           <div class="mb-3">
             <label for="name" class="form-label">Application Name</label>
             <input type="text" class="form-control" id="name" name="name" placeholder="Enter application name" required>
@@ -56,6 +96,72 @@
             <label for="url" class="form-label">Application URL</label>
             <input type="url" class="form-control" id="url" name="url" placeholder="Enter application URL" required>
           </div>
+
+          <!-- Icon Selection Panel (Single Row Slider) -->
+          <div class="mb-3">
+            <label class="form-label">Pick a Font Awesome Icon</label>
+            <!-- Single row with horizontal scroll -->
+            <div class="icon-scroller">
+              <!-- 15+ Icon Choices. Feel free to add more. -->
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-cubes', event)">
+                <i class="fas fa-cubes"></i><br><small>fa-cubes</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-cloud', event)">
+                <i class="fas fa-cloud"></i><br><small>fa-cloud</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-user', event)">
+                <i class="fas fa-user"></i><br><small>fa-user</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-rocket', event)">
+                <i class="fas fa-rocket"></i><br><small>fa-rocket</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-database', event)">
+                <i class="fas fa-database"></i><br><small>fa-database</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-server', event)">
+                <i class="fas fa-server"></i><br><small>fa-server</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-code-branch', event)">
+                <i class="fas fa-code-branch"></i><br><small>fa-code-branch</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-network-wired', event)">
+                <i class="fas fa-network-wired"></i><br><small>fa-network-wired</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-lock', event)">
+                <i class="fas fa-lock"></i><br><small>fa-lock</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-robot', event)">
+                <i class="fas fa-robot"></i><br><small>fa-robot</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-bug', event)">
+                <i class="fas fa-bug"></i><br><small>fa-bug</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-toolbox', event)">
+                <i class="fas fa-toolbox"></i><br><small>fa-toolbox</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-heart', event)">
+                <i class="fas fa-heart"></i><br><small>fa-heart</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-microchip', event)">
+                <i class="fas fa-microchip"></i><br><small>fa-microchip</small>
+              </div>
+              <div class="icon-choice text-center" onclick="setIcon('fas fa-wrench', event)">
+                <i class="fas fa-wrench"></i><br><small>fa-wrench</small>
+              </div>
+              <!-- Add more icons if desired -->
+            </div>
+            <!-- Hidden input to store the chosen FA icon class -->
+            <input type="hidden" id="icon" name="icon" value="fas fa-cubes">
+            <small class="text-muted">Scroll to see more icons, or upload your own image below.</small>
+          </div>
+
+          <!-- Optional Custom Icon Upload -->
+          <div class="mb-3">
+            <label for="icon_file" class="form-label">Upload Custom Icon (Optional)</label>
+            <input type="file" class="form-control" id="icon_file" name="icon_file" accept="image/*">
+            <small class="text-muted">If you choose a file, it overrides the Font Awesome icon.</small>
+          </div>
+
           <button type="submit" class="btn btn-success w-100 fw-bold">
             <i class="fas fa-save me-2"></i> Add Application
           </button>
@@ -64,7 +170,7 @@
     </div>
 
     <!-- Existing Applications Table -->
-    <div class="card shadow-lg border-0">
+    <div class="card shadow-lg border-0 mb-5">
       <div class="card-header bg-secondary text-white fw-bold">
         <i class="fas fa-list me-2"></i> Existing Applications
       </div>
@@ -73,6 +179,7 @@
           <thead class="table-dark">
             <tr>
               <th scope="col">ID</th>
+              <th scope="col" class="text-center">Icon</th>
               <th scope="col">Name</th>
               <th scope="col">URL</th>
               <th scope="col" class="text-center">Actions</th>
@@ -83,6 +190,16 @@
               {% for app in apps %}
               <tr>
                 <th scope="row">{{ app.id }}</th>
+                <td class="text-center">
+                  {% if app.icon.startswith('upload:') %}
+                    <!-- If it's an uploaded file, show image -->
+                    <img src="{{ url_for('static', filename='uploads/' ~ app.icon[7:]) }}"
+                         alt="Custom Icon" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                  {% else %}
+                    <!-- Otherwise, show Font Awesome icon -->
+                    <i class="{{ app.icon }} fa-2x"></i>
+                  {% endif %}
+                </td>
                 <td>{{ app.name }}</td>
                 <td>
                   <a href="{{ app.url }}" target="_blank">{{ app.url }}</a>
@@ -99,17 +216,81 @@
               {% endfor %}
             {% else %}
               <tr>
-                <td colspan="4" class="text-center py-3">No applications added yet.</td>
+                <td colspan="5" class="text-center py-3">No applications added yet.</td>
               </tr>
             {% endif %}
           </tbody>
         </table>
       </div>
     </div>
+
+    {% if debug_insights %}
+    <!-- System Analytics Card -->
+    <div class="card shadow-lg border-0">
+      <div class="card-header bg-info text-white fw-bold d-flex align-items-center justify-content-between">
+        <span><i class="fas fa-chart-line me-2"></i> System Analytics</span>
+        <button class="btn btn-sm btn-dark" onclick="refreshSystemInfo()">
+          <i class="fas fa-sync me-1"></i> Refresh System Info
+        </button>
+      </div>
+      <div class="card-body">
+        <div id="systemInfoContainer">
+          <p class="text-muted">Click "Refresh System Info" to load debug data.</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS for Icon Selection and System Info -->
+  <script>
+    function setIcon(iconClass, event) {
+      // set hidden input
+      document.getElementById('icon').value = iconClass;
+      // remove 'selected' from all .icon-choice
+      let allIcons = document.getElementsByClassName('icon-choice');
+      for (let i = 0; i < allIcons.length; i++) {
+        allIcons[i].classList.remove('selected');
+      }
+      // add 'selected' to the clicked one
+      event.currentTarget.classList.add('selected');
+    }
+
+    {% if debug_insights %}
+    function refreshSystemInfo() {
+      fetch("{{ url_for('admin_system_info') }}")
+        .then((resp) => resp.json())
+        .then((data) => {
+          if(data.error) {
+            document.getElementById("systemInfoContainer").innerHTML =
+              "<div class='alert alert-danger'>Error: " + data.error + "</div>";
+            return;
+          }
+
+          let html = "";
+          for (let key in data) {
+            let title = key.toUpperCase();
+            html += `
+              <details class="mb-3">
+                <summary class="fw-bold">${title}</summary>
+                <pre style="white-space: pre-wrap; background:#f8f9fa; color:#333; padding:10px; border-radius:5px; margin-top:5px;">
+${data[key].trim()}
+                </pre>
+              </details>
+            `;
+          }
+          document.getElementById("systemInfoContainer").innerHTML = html;
+        })
+        .catch((err) => {
+          document.getElementById("systemInfoContainer").innerHTML =
+            "<div class='alert alert-danger'>Failed to fetch system info: " + err + "</div>";
+        });
+    }
+    {% endif %}
+  </script>
 </body>
 </html>
 
