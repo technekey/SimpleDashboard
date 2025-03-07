@@ -44,7 +44,7 @@ def main():
         fernet = Fernet(new_key.encode())
         encrypted_weather_key = fernet.encrypt(weather_key.encode()).decode()
 
-        default_city = "Frisco"
+        default_city = "ottawa"
         city_input = input(f"Enter city name for weather (default={default_city}): ").strip()
         city_name = city_input if city_input else default_city
     else:
